@@ -1,0 +1,606 @@
+{
+  "info": {
+    "name": "DSA Booking API Collection",
+    "description": "Complete API collection for DSA Booking System",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{authToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"phone\": \"9876543210\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/userapp/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["userapp", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"9876543210\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/userapp/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["userapp", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/userapp/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["userapp", "auth", "me"]
+            }
+          }
+        },
+        {
+          "name": "Send OTP",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"9876543210\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/userapp/auth/send-otp",
+              "host": ["{{baseUrl}}"],
+              "path": ["userapp", "auth", "send-otp"]
+            }
+          }
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"9876543210\",\n  \"code\": \"1234\",\n  \"password\": \"newpassword123\",\n  \"confirmPassword\": \"newpassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/userapp/auth/forgot-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["userapp", "auth", "forgot-password"]
+            }
+          }
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"password\": \"newpassword123\",\n  \"confirmPassword\": \"newpassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/userapp/auth/reset-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["userapp", "auth", "reset-password"]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/userapp/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["userapp", "auth", "logout"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Home Collection",
+      "item": [
+        {
+          "name": "Create Home Collection",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"address\": \"123 Main Street, Apartment 4B\",\n  \"city\": \"Mumbai\",\n  \"state\": \"Maharashtra\",\n  \"pincode\": \"400001\",\n  \"contactPerson\": \"John Doe\",\n  \"contactNumber\": \"9876543210\",\n  \"collectionDate\": \"2024-01-15T10:00:00.000Z\",\n  \"timeSlot\": \"10:00 AM - 12:00 PM\",\n  \"packageId\": \"60f7b3b3b3b3b3b3b3b3b3b3\",\n  \"specialInstructions\": \"Please call before arriving\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/dsa/home-collection",
+              "host": ["{{baseUrl}}"],
+              "path": ["dsa", "home-collection"]
+            }
+          }
+        },
+        {
+          "name": "Get Home Collections",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/dsa/home-collection?page=1&limit=10&status=pending",
+              "host": ["{{baseUrl}}"],
+              "path": ["dsa", "home-collection"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "status",
+                  "value": "pending"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Home Collection by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/dsa/home-collection/60f7b3b3b3b3b3b3b3b3b3b3",
+              "host": ["{{baseUrl}}"],
+              "path": ["dsa", "home-collection", "60f7b3b3b3b3b3b3b3b3b3b3"]
+            }
+          }
+        },
+        {
+          "name": "Update Home Collection",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"address\": \"456 Updated Street\",\n  \"contactPerson\": \"Jane Doe\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/dsa/home-collection/60f7b3b3b3b3b3b3b3b3b3b3",
+              "host": ["{{baseUrl}}"],
+              "path": ["dsa", "home-collection", "60f7b3b3b3b3b3b3b3b3b3b3"]
+            }
+          }
+        },
+        {
+          "name": "Cancel Home Collection",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/dsa/home-collection/60f7b3b3b3b3b3b3b3b3b3b3/cancel",
+              "host": ["{{baseUrl}}"],
+              "path": ["dsa", "home-collection", "60f7b3b3b3b3b3b3b3b3b3b3", "cancel"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Time Slots",
+      "item": [
+        {
+          "name": "Get Available Slots",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/dsa/slots/available?date=2024-01-15",
+              "host": ["{{baseUrl}}"],
+              "path": ["dsa", "slots", "available"],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "2024-01-15"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Slots by Date Range",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/dsa/slots?startDate=2024-01-15&endDate=2024-01-20",
+              "host": ["{{baseUrl}}"],
+              "path": ["dsa", "slots"],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": "2024-01-15"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2024-01-20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Book Slot",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"slotId\": \"60f7b3b3b3b3b3b3b3b3b3b3\",\n  \"packageId\": \"60f7b3b3b3b3b3b3b3b3b3b3\",\n  \"homeCollectionId\": \"60f7b3b3b3b3b3b3b3b3b3b3\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/dsa/slots/book",
+              "host": ["{{baseUrl}}"],
+              "path": ["dsa", "slots", "book"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Bookings",
+      "item": [
+        {
+          "name": "Get Bookings",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/dsa/bookings?page=1&limit=10&status=pending",
+              "host": ["{{baseUrl}}"],
+              "path": ["dsa", "bookings"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "status",
+                  "value": "pending"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Booking by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/dsa/bookings/60f7b3b3b3b3b3b3b3b3b3b3",
+              "host": ["{{baseUrl}}"],
+              "path": ["dsa", "bookings", "60f7b3b3b3b3b3b3b3b3b3b3"]
+            }
+          }
+        },
+        {
+          "name": "Update Booking",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"confirmed\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/dsa/bookings/60f7b3b3b3b3b3b3b3b3b3b3",
+              "host": ["{{baseUrl}}"],
+              "path": ["dsa", "bookings", "60f7b3b3b3b3b3b3b3b3b3b3"]
+            }
+          }
+        },
+        {
+          "name": "Cancel Booking",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cancellationReason\": \"Change of plans\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/dsa/bookings/60f7b3b3b3b3b3b3b3b3b3b3/cancel",
+              "host": ["{{baseUrl}}"],
+              "path": ["dsa", "bookings", "60f7b3b3b3b3b3b3b3b3b3b3", "cancel"]
+            }
+          }
+        },
+        {
+          "name": "Confirm Booking",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/dsa/bookings/60f7b3b3b3b3b3b3b3b3b3b3/confirm",
+              "host": ["{{baseUrl}}"],
+              "path": ["dsa", "bookings", "60f7b3b3b3b3b3b3b3b3b3b3", "confirm"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Packages",
+      "item": [
+        {
+          "name": "Search Packages",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/dsa/packages/search?search=blood&category=health&minPrice=1000&maxPrice=5000&page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["dsa", "packages", "search"],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "blood"
+                },
+                {
+                  "key": "category",
+                  "value": "health"
+                },
+                {
+                  "key": "minPrice",
+                  "value": "1000"
+                },
+                {
+                  "key": "maxPrice",
+                  "value": "5000"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Package by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/dsa/packages/60f7b3b3b3b3b3b3b3b3b3b3",
+              "host": ["{{baseUrl}}"],
+              "path": ["dsa", "packages", "60f7b3b3b3b3b3b3b3b3b3b3"]
+            }
+          }
+        },
+        {
+          "name": "Get Packages by Category",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/dsa/packages/category/health?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["dsa", "packages", "category", "health"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get All Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/dsa/packages/categories",
+              "host": ["{{baseUrl}}"],
+              "path": ["dsa", "packages", "categories"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reports",
+      "item": [
+        {
+          "name": "Generate Report",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/dsa/reports/generate?type=daily",
+              "host": ["{{baseUrl}}"],
+              "path": ["dsa", "reports", "generate"],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "daily"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Reports",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/dsa/reports?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["dsa", "reports"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Report by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/dsa/reports/60f7b3b3b3b3b3b3b3b3b3b3",
+              "host": ["{{baseUrl}}"],
+              "path": ["dsa", "reports", "60f7b3b3b3b3b3b3b3b3b3b3"]
+            }
+          }
+        },
+        {
+          "name": "Download Report",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/dsa/reports/60f7b3b3b3b3b3b3b3b3b3b3/download?format=pdf",
+              "host": ["{{baseUrl}}"],
+              "path": ["dsa", "reports", "60f7b3b3b3b3b3b3b3b3b3b3", "download"],
+              "query": [
+                {
+                  "key": "format",
+                  "value": "pdf"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Get Dashboard Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/dsa/dashboard/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["dsa", "dashboard", "stats"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
