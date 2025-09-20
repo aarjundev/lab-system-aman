@@ -61,3 +61,4 @@ const reportSchema = new Schema(
 reportSchema.plugin(mongoosePaginate);
 
 export const Report = mongoose.model("Report", reportSchema);
+

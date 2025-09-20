@@ -3,6 +3,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import passport from "passport";
 import { responseHandler } from "./utils/response/responseHandler.js";
+import { apiKeyMiddleware } from "./middlewares/apiKey.middleware.js";
 
 //  All Routes
 // ------------- USER Routes--------------------
@@ -34,6 +35,9 @@ app.use(cookieParser());
 userappPassportStrategy(passport);
 // googlePassportStrategy(passport);
 // facebookPassportStrategy(passport);
+
+// API key protection for backend APIs
+// app.use("/api", apiKeyMiddleware);
 
 //  User Routes
 app.use("/api/v1/userapp/auth", userRouter);

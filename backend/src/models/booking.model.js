@@ -70,3 +70,4 @@ const bookingSchema = new Schema(
 bookingSchema.plugin(mongoosePaginate);
 
 export const Booking = mongoose.model("Booking", bookingSchema);
+

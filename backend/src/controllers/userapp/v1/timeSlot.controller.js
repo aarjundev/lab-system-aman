@@ -1,6 +1,8 @@
 import { asyncHandler } from "../../../utils/asyncHandler.js";
 import { TimeSlot } from "../../../models/timeSlot.model.js";
 import { Booking } from "../../../models/booking.model.js";
+import { Package } from "../../../models/package.model.js";
+import joi from "joi";
 import {
   dbServiceFind,
   dbServiceFindOne,
@@ -15,7 +17,7 @@ export const getAvailableSlots = asyncHandler(async (req, res) => {
     return res.badRequest({ message: "Date parameter is required" });
   }
 
-  const queryDate = dayjs(date).startOf('day');
+  const queryDate = dayjs(date).startOf("day");
   if (!queryDate.isValid()) {
     return res.validationError({ message: "Invalid date format" });
   }
@@ -23,7 +25,7 @@ export const getAvailableSlots = asyncHandler(async (req, res) => {
   const query = {
     date: {
       $gte: queryDate.toDate(),
-      $lt: queryDate.add(1, 'day').toDate(),
+      $lt: queryDate.add(1, "day").toDate(),
     },
     isActive: true,
     isDeleted: false,
@@ -38,7 +40,7 @@ export const getAvailableSlots = asyncHandler(async (req, res) => {
     slots.map(async (slot) => {
       const bookingCount = await Booking.countDocuments({
         slotId: slot._id,
-        status: { $in: ['pending', 'confirmed'] },
+        status: { $in: ["pending", "confirmed"] },
         isActive: true,
         isDeleted: false,
       });
@@ -61,18 +63,22 @@ export const getSlotsByDateRange = asyncHandler(async (req, res) => {
   const { startDate, endDate } = req.query;
 
   if (!startDate || !endDate) {
-    return res.badRequest({ message: "Start date and end date parameters are required" });
+    return res.badRequest({
+      message: "Start date and end date parameters are required",
+    });
   }
 
-  const start = dayjs(startDate).startOf('day');
-  const end = dayjs(endDate).endOf('day');
+  const start = dayjs(startDate).startOf("day");
+  const end = dayjs(endDate).endOf("day");
 
   if (!start.isValid() || !end.isValid()) {
     return res.validationError({ message: "Invalid date format" });
   }
 
   if (start.isAfter(end)) {
-    return res.validationError({ message: "Start date must be before end date" });
+    return res.validationError({
+      message: "Start date must be before end date",
+    });
   }
 
   const query = {
@@ -94,11 +100,18 @@ export const getSlotsByDateRange = asyncHandler(async (req, res) => {
   });
 });
 
+const bookSlotSchema = joi.object({
+  slotId: joi.string().required(),
+  packageId: joi.string().required(),
+  homeCollectionId: joi.string().optional(),
+});
+
 export const bookSlot = asyncHandler(async (req, res) => {
   const { slotId, packageId, homeCollectionId } = req.body;
 
-  if (!slotId || !packageId) {
-    return res.badRequest({ message: "Slot ID and Package ID are required" });
+  const { error } = bookSlotSchema.validate(req.body);
+  if (error) {
+    return res.validationError({ message: error.details.map((d) => d.message).join("\n") });
   }
 
   // Check if slot exists and is available
@@ -109,13 +122,13 @@ export const bookSlot = asyncHandler(async (req, res) => {
   });
 
   if (!slot) {
-    return res.notFound({ message: "Time slot not found" });
+    return res.recordNotFound({ message: "Time slot not found" });
   }
 
   // Check current bookings for this slot
   const currentBookings = await Booking.countDocuments({
     slotId: slotId,
-    status: { $in: ['pending', 'confirmed'] },
+    status: { $in: ["pending", "confirmed"] },
     isActive: true,
     isDeleted: false,
   });
@@ -132,7 +145,7 @@ export const bookSlot = asyncHandler(async (req, res) => {
   });
 
   if (!packageDetails) {
-    return res.notFound({ message: "Package not found" });
+    return res.recordNotFound({ message: "Package not found" });
   }
 
   // Create booking
@@ -152,3 +165,4 @@ export const bookSlot = asyncHandler(async (req, res) => {
     message: "Slot booked successfully",
   });
 });
+

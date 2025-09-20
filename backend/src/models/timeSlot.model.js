@@ -52,3 +52,4 @@ const timeSlotSchema = new Schema(
 timeSlotSchema.plugin(mongoosePaginate);
 
 export const TimeSlot = mongoose.model("TimeSlot", timeSlotSchema);
+

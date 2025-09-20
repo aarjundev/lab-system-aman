@@ -21,28 +21,30 @@ export const generateReport = asyncHandler(async (req, res) => {
 
   // Calculate date range based on type
   switch (type) {
-    case 'daily':
-      startDate = dayjs().startOf('day');
-      endDate = dayjs().endOf('day');
-      periodString = dayjs().format('YYYY-MM-DD');
+    case "daily":
+      startDate = dayjs().startOf("day");
+      endDate = dayjs().endOf("day");
+      periodString = dayjs().format("YYYY-MM-DD");
       break;
-    case 'weekly':
-      startDate = dayjs().startOf('week');
-      endDate = dayjs().endOf('week');
-      periodString = `${startDate.format('YYYY-MM-DD')} to ${endDate.format('YYYY-MM-DD')}`;
+    case "weekly":
+      startDate = dayjs().startOf("week");
+      endDate = dayjs().endOf("week");
+      periodString = `${startDate.format("YYYY-MM-DD")} to ${endDate.format("YYYY-MM-DD")}`;
       break;
-    case 'monthly':
-      startDate = dayjs().startOf('month');
-      endDate = dayjs().endOf('month');
-      periodString = dayjs().format('YYYY-MM');
+    case "monthly":
+      startDate = dayjs().startOf("month");
+      endDate = dayjs().endOf("month");
+      periodString = dayjs().format("YYYY-MM");
       break;
-    case 'custom':
+    case "custom":
       if (!period) {
-        return res.badRequest({ message: "Period is required for custom reports" });
+        return res.badRequest({
+          message: "Period is required for custom reports",
+        });
       }
-      const [start, end] = period.split(' to ');
-      startDate = dayjs(start).startOf('day');
-      endDate = dayjs(end).endOf('day');
+      const [start, end] = period.split(" to ");
+      startDate = dayjs(start).startOf("day");
+      endDate = dayjs(end).endOf("day");
       periodString = period;
       break;
     default:
@@ -58,14 +60,14 @@ export const generateReport = asyncHandler(async (req, res) => {
 
   const completedBookings = await Booking.countDocuments({
     bookingDate: { $gte: startDate.toDate(), $lte: endDate.toDate() },
-    status: 'completed',
+    status: "completed",
     isActive: true,
     isDeleted: false,
   });
 
   const cancelledBookings = await Booking.countDocuments({
     bookingDate: { $gte: startDate.toDate(), $lte: endDate.toDate() },
-    status: 'cancelled',
+    status: "cancelled",
     isActive: true,
     isDeleted: false,
   });
@@ -75,17 +77,17 @@ export const generateReport = asyncHandler(async (req, res) => {
     {
       $match: {
         bookingDate: { $gte: startDate.toDate(), $lte: endDate.toDate() },
-        status: 'completed',
+        status: "completed",
         isActive: true,
         isDeleted: false,
-      }
+      },
     },
     {
       $group: {
         _id: null,
-        totalRevenue: { $sum: '$totalAmount' }
-      }
-    }
+        totalRevenue: { $sum: "$totalAmount" },
+      },
+    },
   ]);
 
   const totalRevenue = revenueData.length > 0 ? revenueData[0].totalRevenue : 0;
@@ -97,40 +99,40 @@ export const generateReport = asyncHandler(async (req, res) => {
         bookingDate: { $gte: startDate.toDate(), $lte: endDate.toDate() },
         isActive: true,
         isDeleted: false,
-      }
+      },
     },
     {
       $group: {
-        _id: '$packageId',
+        _id: "$packageId",
         count: { $sum: 1 },
-        totalRevenue: { $sum: '$totalAmount' }
-      }
+        totalRevenue: { $sum: "$totalAmount" },
+      },
     },
     {
       $lookup: {
-        from: 'packages',
-        localField: '_id',
-        foreignField: '_id',
-        as: 'package'
-      }
+        from: "packages",
+        localField: "_id",
+        foreignField: "_id",
+        as: "package",
+      },
     },
     {
-      $unwind: '$package'
+      $unwind: "$package",
     },
     {
       $project: {
-        packageId: '$_id',
-        packageName: '$package.name',
-        bookingCount: '$count',
-        revenue: '$totalRevenue'
-      }
+        packageId: "$_id",
+        packageName: "$package.name",
+        bookingCount: "$count",
+        revenue: "$totalRevenue",
+      },
     },
     {
-      $sort: { bookingCount: -1 }
+      $sort: { bookingCount: -1 },
     },
     {
-      $limit: 10
-    }
+      $limit: 10,
+    },
   ]);
 
   // Get daily booking trends
@@ -140,20 +142,20 @@ export const generateReport = asyncHandler(async (req, res) => {
         bookingDate: { $gte: startDate.toDate(), $lte: endDate.toDate() },
         isActive: true,
         isDeleted: false,
-      }
+      },
     },
     {
       $group: {
         _id: {
-          $dateToString: { format: '%Y-%m-%d', date: '$bookingDate' }
+          $dateToString: { format: "%Y-%m-%d", date: "$bookingDate" },
         },
         count: { $sum: 1 },
-        revenue: { $sum: '$totalAmount' }
-      }
+        revenue: { $sum: "$totalAmount" },
+      },
     },
     {
-      $sort: { _id: 1 }
-    }
+      $sort: { _id: 1 },
+    },
   ]);
 
   const reportData = {
@@ -225,7 +227,7 @@ export const getReportById = asyncHandler(async (req, res) => {
   const report = await dbServiceFindOne(Report, query);
 
   if (!report) {
-    return res.notFound({ message: "Report not found" });
+    return res.recordNotFound({ message: "Report not found" });
   }
 
   return res.success({
@@ -236,7 +238,7 @@ export const getReportById = asyncHandler(async (req, res) => {
 
 export const downloadReport = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { format = 'pdf' } = req.query;
+  const { format = "pdf" } = req.query;
 
   if (!isValidObjectId(id)) {
     return res.validationError({ message: "Invalid report ID" });
@@ -252,16 +254,20 @@ export const downloadReport = asyncHandler(async (req, res) => {
   const report = await dbServiceFindOne(Report, query);
 
   if (!report) {
-    return res.notFound({ message: "Report not found" });
+    return res.recordNotFound({ message: "Report not found" });
   }
 
   // For now, return JSON data
   // In a real implementation, you would generate PDF/Excel files
-  res.setHeader('Content-Type', 'application/json');
-  res.setHeader('Content-Disposition', `attachment; filename="report-${id}.${format}"`);
-  
+  res.setHeader("Content-Type", "application/json");
+  res.setHeader(
+    "Content-Disposition",
+    `attachment; filename="report-${id}.${format}"`
+  );
+
   return res.success({
     data: report,
     message: "Report download initiated",
   });
 });
+

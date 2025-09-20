@@ -1,5 +1,6 @@
 import { asyncHandler } from "../../../utils/asyncHandler.js";
 import { validateParamsWithJoi } from "../../../utils/validateRequest.js";
+import joi from "joi";
 import { HomeCollection } from "../../../models/homeCollection.model.js";
 import { Package } from "../../../models/package.model.js";
 import {
@@ -7,33 +8,32 @@ import {
   dbServiceFindOne,
   dbServiceUpdateOne,
   dbServiceFind,
+  dbServicePaginate,
 } from "../../../db/dbServices.js";
 import { isValidObjectId } from "mongoose";
 import dayjs from "dayjs";
 
-// Validation schemas
-const homeCollectionSchema = {
-  address: { type: "string", required: true, min: 10, max: 200 },
-  city: { type: "string", required: true, min: 2, max: 50 },
-  state: { type: "string", required: true, min: 2, max: 50 },
-  pincode: { type: "string", required: true, pattern: "^[0-9]{6}$" },
-  contactPerson: { type: "string", required: true, min: 2, max: 100 },
-  contactNumber: { type: "string", required: true, pattern: "^[0-9]{10}$" },
-  collectionDate: { type: "date", required: true },
-  timeSlot: { type: "string", required: true },
-  packageId: { type: "string", required: true },
-  specialInstructions: { type: "string", max: 500 },
-};
+// Joi validation schema
+const homeCollectionSchema = joi.object({
+  address: joi.string().min(10).max(200).required(),
+  city: joi.string().min(2).max(50).required(),
+  state: joi.string().min(2).max(50).required(),
+  pincode: joi.string().pattern(/^[0-9]{6}$/).required(),
+  contactPerson: joi.string().min(2).max(100).required(),
+  contactNumber: joi.string().pattern(/^\d{10}$/).required(),
+  collectionDate: joi.date().iso().required(),
+  timeSlot: joi.string().required(),
+  packageId: joi.string().required(),
+  specialInstructions: joi.string().max(500).optional(),
+});
 
 export const createHomeCollection = asyncHandler(async (req, res) => {
   const { packageId, collectionDate, ...collectionData } = req.body;
 
   // Validate request
-  const validateRequest = validateParamsWithJoi(req.body, homeCollectionSchema);
-  if (!validateRequest.isValid) {
-    return res.validationError({
-      message: `Invalid values in parameters, ${validateRequest.message}`,
-    });
+  const { error } = homeCollectionSchema.validate(req.body);
+  if (error) {
+    return res.validationError({ message: error.details.map((d) => d.message).join("\n") });
   }
 
   // Check if package exists
@@ -41,15 +41,20 @@ export const createHomeCollection = asyncHandler(async (req, res) => {
     return res.validationError({ message: "Invalid package ID" });
   }
 
-  const packageExists = await dbServiceFindOne(Package, { _id: packageId, isActive: true });
+  const packageExists = await dbServiceFindOne(Package, {
+    _id: packageId,
+    isActive: true,
+  });
   if (!packageExists) {
-    return res.notFound({ message: "Package not found" });
+    return res.recordNotFound({ message: "Package not found" });
   }
 
   // Check if collection date is in the future
   const collectionDateObj = dayjs(collectionDate);
-  if (collectionDateObj.isBefore(dayjs(), 'day')) {
-    return res.validationError({ message: "Collection date must be in the future" });
+  if (collectionDateObj.isBefore(dayjs(), "day")) {
+    return res.validationError({
+      message: "Collection date must be in the future",
+    });
   }
 
   // Create home collection
@@ -84,13 +89,11 @@ export const getHomeCollections = asyncHandler(async (req, res) => {
   const options = {
     page: parseInt(page),
     limit: parseInt(limit),
-    populate: [
-      { path: "packageId", select: "name price duration" },
-    ],
+    populate: [{ path: "packageId", select: "name price duration" }],
     sort: { createdAt: -1 },
   };
 
-  const result = await dbServiceFind(HomeCollection, query, options);
+  const result = await dbServicePaginate(HomeCollection, query, options);
 
   return res.success({
     data: result,
@@ -112,14 +115,12 @@ export const getHomeCollectionById = asyncHandler(async (req, res) => {
     isDeleted: false,
   };
 
-  const homeCollection = await dbServiceFindOne(HomeCollection, query, {
-    populate: [
-      { path: "packageId", select: "name price duration tests" },
-    ],
+  const homeCollection = await dbServicePaginate(HomeCollection, query, {
+    populate: [{ path: "packageId", select: "name price duration tests" }],
   });
 
   if (!homeCollection) {
-    return res.notFound({ message: "Home collection not found" });
+    return res.recordNotFound({ message: "Home collection not found" });
   }
 
   return res.success({
@@ -145,8 +146,10 @@ export const updateHomeCollection = asyncHandler(async (req, res) => {
   // If updating collection date, validate it
   if (updateData.collectionDate) {
     const collectionDateObj = dayjs(updateData.collectionDate);
-    if (collectionDateObj.isBefore(dayjs(), 'day')) {
-      return res.validationError({ message: "Collection date must be in the future" });
+    if (collectionDateObj.isBefore(dayjs(), "day")) {
+      return res.validationError({
+        message: "Collection date must be in the future",
+      });
     }
     updateData.collectionDate = collectionDateObj.toDate();
   }
@@ -160,13 +163,11 @@ export const updateHomeCollection = asyncHandler(async (req, res) => {
 
   const result = await dbServiceUpdateOne(HomeCollection, query, updateData, {
     new: true,
-    populate: [
-      { path: "packageId", select: "name price duration" },
-    ],
+    populate: [{ path: "packageId", select: "name price duration" }],
   });
 
   if (!result) {
-    return res.notFound({ message: "Home collection not found" });
+    return res.recordNotFound({ message: "Home collection not found" });
   }
 
   return res.success({
@@ -197,7 +198,7 @@ export const cancelHomeCollection = asyncHandler(async (req, res) => {
   );
 
   if (!result) {
-    return res.notFound({ message: "Home collection not found" });
+    return res.recordNotFound({ message: "Home collection not found" });
   }
 
   return res.success({
@@ -205,3 +206,4 @@ export const cancelHomeCollection = asyncHandler(async (req, res) => {
     message: "Home collection cancelled successfully",
   });
 });
+

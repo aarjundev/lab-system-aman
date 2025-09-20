@@ -57,12 +57,15 @@ export const getBookingById = asyncHandler(async (req, res) => {
     populate: [
       { path: "packageId", select: "name price duration tests" },
       { path: "slotId", select: "startTime endTime date" },
-      { path: "homeCollectionId", select: "address city contactPerson contactNumber" },
+      {
+        path: "homeCollectionId",
+        select: "address city contactPerson contactNumber",
+      },
     ],
   });
 
   if (!booking) {
-    return res.notFound({ message: "Booking not found" });
+    return res.recordNotFound({ message: "Booking not found" });
   }
 
   return res.success({
@@ -102,7 +105,7 @@ export const updateBooking = asyncHandler(async (req, res) => {
   });
 
   if (!result) {
-    return res.notFound({ message: "Booking not found" });
+    return res.recordNotFound({ message: "Booking not found" });
   }
 
   return res.success({
@@ -136,7 +139,7 @@ export const cancelBooking = asyncHandler(async (req, res) => {
   });
 
   if (!result) {
-    return res.notFound({ message: "Booking not found" });
+    return res.recordNotFound({ message: "Booking not found" });
   }
 
   return res.success({
@@ -159,17 +162,22 @@ export const confirmBooking = asyncHandler(async (req, res) => {
     isDeleted: false,
   };
 
-  const result = await dbServiceUpdateOne(Booking, query, { status: "confirmed" }, {
-    new: true,
-    populate: [
-      { path: "packageId", select: "name price duration" },
-      { path: "slotId", select: "startTime endTime date" },
-      { path: "homeCollectionId", select: "address city contactPerson" },
-    ],
-  });
+  const result = await dbServiceUpdateOne(
+    Booking,
+    query,
+    { status: "confirmed" },
+    {
+      new: true,
+      populate: [
+        { path: "packageId", select: "name price duration" },
+        { path: "slotId", select: "startTime endTime date" },
+        { path: "homeCollectionId", select: "address city contactPerson" },
+      ],
+    }
+  );
 
   if (!result) {
-    return res.notFound({ message: "Booking not found" });
+    return res.recordNotFound({ message: "Booking not found" });
   }
 
   return res.success({
@@ -177,3 +185,4 @@ export const confirmBooking = asyncHandler(async (req, res) => {
     message: "Booking confirmed successfully",
   });
 });
+

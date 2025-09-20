@@ -78,3 +78,4 @@ const homeCollectionSchema = new Schema(
 homeCollectionSchema.plugin(mongoosePaginate);
 
 export const HomeCollection = mongoose.model("HomeCollection", homeCollectionSchema);
+

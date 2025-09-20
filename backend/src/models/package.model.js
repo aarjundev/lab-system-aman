@@ -54,3 +54,4 @@ const packageSchema = new Schema(
 packageSchema.plugin(mongoosePaginate);
 
 export const Package = mongoose.model("Package", packageSchema);
+

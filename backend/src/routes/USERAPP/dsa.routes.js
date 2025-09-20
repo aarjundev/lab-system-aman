@@ -48,6 +48,32 @@ import {
   getDashboardStats,
 } from "../../controllers/userapp/v1/dashboard.controller.js";
 
+// External Location Routes (proxy to external API)
+import {
+  searchLocations,
+  getLocationDetails,
+} from "../../controllers/userapp/v1/location.controller.js";
+
+// External Partner APIs
+import {
+  getElocByPlace,
+  getLatLongByEloc,
+  getExternalTimeSlots,
+  createExternalBooking,
+  getConsolidatedReport,
+  getPackageDetailsByCode,
+  searchPackagesExternal,
+  getBookingConfirmation,
+} from "../../controllers/userapp/v1/external.controller.js";
+
+// Member Routes
+import {
+  addMember,
+  getMembers,
+  updateMember,
+  deleteMember,
+} from "../../controllers/userapp/v1/member.controller.js";
+
 const router = Router();
 
 // Home Collection Routes
@@ -116,4 +142,46 @@ router.route("/reports/:id/download")
 router.route("/dashboard/stats")
   .get(auth(PLATFORM.USERAPP), getDashboardStats);
 
+// Location proxy endpoints
+router.route("/locations/search")
+  .get(auth(PLATFORM.USERAPP), searchLocations);
+
+router.route("/locations/:id")
+  .get(auth(PLATFORM.USERAPP), getLocationDetails);
+
+// External Partner integrations
+router.route("/external/eloc")
+  .get(auth(PLATFORM.USERAPP), getElocByPlace);
+
+router.route("/external/latlong")
+  .get(auth(PLATFORM.USERAPP), getLatLongByEloc);
+
+router.route("/external/time-slots")
+  .get(auth(PLATFORM.USERAPP), getExternalTimeSlots);
+
+router.route("/external/bookings")
+  .post(auth(PLATFORM.USERAPP), createExternalBooking);
+
+router.route("/external/reports/:bookingId")
+  .get(auth(PLATFORM.USERAPP), getConsolidatedReport);
+
+router.route("/external/package-details")
+  .get(auth(PLATFORM.USERAPP), getPackageDetailsByCode);
+
+router.route("/external/package-search")
+  .get(auth(PLATFORM.USERAPP), searchPackagesExternal);
+
+router.route("/external/booking-confirmation")
+  .get(auth(PLATFORM.USERAPP), getBookingConfirmation);
+
+// Members
+router.route("/members")
+  .post(auth(PLATFORM.USERAPP), addMember)
+  .get(auth(PLATFORM.USERAPP), getMembers);
+
+router.route("/members/:id")
+  .put(auth(PLATFORM.USERAPP), updateMember)
+  .delete(auth(PLATFORM.USERAPP), deleteMember);
+
 export default router;
+

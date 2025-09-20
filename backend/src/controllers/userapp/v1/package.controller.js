@@ -1,19 +1,16 @@
 import { asyncHandler } from "../../../utils/asyncHandler.js";
 import { Package } from "../../../models/package.model.js";
-import {
-  dbServiceFind,
-  dbServiceFindOne,
-} from "../../../db/dbServices.js";
+import { dbServiceFind, dbServiceFindOne, dbServicePaginate } from "../../../db/dbServices.js";
 import { isValidObjectId } from "mongoose";
 
 export const searchPackages = asyncHandler(async (req, res) => {
-  const { 
-    search, 
-    category, 
-    minPrice, 
-    maxPrice, 
-    page = 1, 
-    limit = 10 
+  const {
+    search,
+    category,
+    minPrice,
+    maxPrice,
+    page = 1,
+    limit = 10,
   } = req.query;
 
   let query = {
@@ -24,9 +21,9 @@ export const searchPackages = asyncHandler(async (req, res) => {
   // Text search
   if (search) {
     query.$or = [
-      { name: { $regex: search, $options: 'i' } },
-      { description: { $regex: search, $options: 'i' } },
-      { tests: { $in: [new RegExp(search, 'i')] } },
+      { name: { $regex: search, $options: "i" } },
+      { description: { $regex: search, $options: "i" } },
+      { tests: { $in: [new RegExp(search, "i")] } },
     ];
   }
 
@@ -48,7 +45,7 @@ export const searchPackages = asyncHandler(async (req, res) => {
     sort: { createdAt: -1 },
   };
 
-  const result = await dbServiceFind(Package, query, options);
+  const result = await dbServicePaginate(Package, query, options);
 
   return res.success({
     data: result,
@@ -72,7 +69,7 @@ export const getPackageById = asyncHandler(async (req, res) => {
   const packageData = await dbServiceFindOne(Package, query);
 
   if (!packageData) {
-    return res.notFound({ message: "Package not found" });
+    return res.recordNotFound({ message: "Package not found" });
   }
 
   return res.success({
@@ -106,7 +103,7 @@ export const getPackagesByCategory = asyncHandler(async (req, res) => {
 });
 
 export const getAllCategories = asyncHandler(async (req, res) => {
-  const categories = await Package.distinct('category', {
+  const categories = await Package.distinct("category", {
     isActive: true,
     isDeleted: false,
   });
@@ -116,3 +113,4 @@ export const getAllCategories = asyncHandler(async (req, res) => {
     message: "Categories retrieved successfully",
   });
 });
+

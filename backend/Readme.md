@@ -26,6 +26,13 @@
         MONGODB_URL=
         CORS_ORIGIN=*
 
+        # API access (internal)
+        API_KEY=your-secure-api-key
+
+        # External API integration
+        EXTERNAL_API_BASE_URL=https://external.api.example.com
+        EXTERNAL_API_KEY=external-api-key-here
+
         ACCESS_TOKEN_SECRET = mern-task-upwork
         ACCESS_TOKEN_EXPIRY = 1d
 
@@ -36,6 +43,21 @@
         GOOGLE_CLIENTID=
         GOOGLE_API_KEY=XXXXXXX
     ```
+
+All backend routes under `/api/**` require the `x-api-key` header matching `API_KEY`.
+
+Example curl:
+
+```
+curl -H "x-api-key: your-secure-api-key" http://localhost:5000/api/v1/dsa/health
+```
+
+Location proxy examples:
+
+```
+GET /api/v1/dsa/locations/search?q=Mumbai&lat=19.0760&lng=72.8777&radius=10
+GET /api/v1/dsa/locations/{id}
+```
 
 ## folder Structure
 
