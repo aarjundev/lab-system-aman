@@ -3,13 +3,14 @@ import { Booking } from "../../../models/booking.model.js";
 import {
   dbServiceFind,
   dbServiceFindOne,
+  dbServicePaginate,
   dbServiceUpdateOne,
 } from "../../../db/dbServices.js";
 import { isValidObjectId } from "mongoose";
 
 export const getBookings = asyncHandler(async (req, res) => {
   const { page = 1, limit = 10, status } = req.query;
-
+  console.log("reqq",req.user.id)
   let query = {
     userId: req.user.id,
     isActive: true,
@@ -23,16 +24,11 @@ export const getBookings = asyncHandler(async (req, res) => {
   const options = {
     page: parseInt(page),
     limit: parseInt(limit),
-    populate: [
-      { path: "packageId", select: "name price duration" },
-      { path: "slotId", select: "startTime endTime date" },
-      { path: "homeCollectionId", select: "address city contactPerson" },
-    ],
     sort: { createdAt: -1 },
   };
 
-  const result = await dbServiceFind(Booking, query, options);
-
+  const result = await dbServicePaginate(Booking, query, options);
+  console.log("result",result);
   return res.success({
     data: result,
     message: "Bookings retrieved successfully",

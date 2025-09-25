@@ -17,57 +17,60 @@ mongoosePaginate.paginate.options = { customLabels: myCustomLabels };
 
 const bookingSchema = new Schema(
   {
-    userId: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-    packageId: {
-      type: Schema.Types.ObjectId,
-      ref: "Package",
-      required: true,
-    },
-    homeCollectionId: {
-      type: Schema.Types.ObjectId,
-      ref: "HomeCollection",
-    },
-    slotId: {
-      type: Schema.Types.ObjectId,
-      ref: "TimeSlot",
-    },
-    status: {
+    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    bookingId: {
       type: String,
-      enum: ['pending', 'confirmed', 'completed', 'cancelled'],
-      default: 'pending',
-    },
-    totalAmount: {
-      type: Number,
       required: true,
     },
+    packages: [
+      {
+        packageId: { type: Number }, // external package id
+        name: { type: String },
+        code: { type: String },
+        price: { type: Number },
+        offer_price: { type: Number },
+        tests: [
+          {
+            testId: Number,
+            name: String,
+            code: String,
+            description: String,
+          },
+        ],
+      },
+    ],
+    slot: {
+      slotId: { type: Number },
+      slotTime: { type: String },
+    },
+    bookingDate: { type: Date, required: true },
+    collectionDate: { type: Date },
+    customer: {
+      name: String,
+      age: Number,
+      gender: String,
+      email: String,
+      phone: String,
+      whatsapp: String,
+      address: String,
+      landmark: String,
+      aadhar: String,
+      pincode: String,
+    },
+    totalAmount: { type: Number },
+    discountedPrice: { type: Object }, // store discounted_price object
+    bookingStatus: { type: String },
     paymentStatus: {
       type: String,
-      enum: ['pending', 'paid', 'failed', 'refunded'],
-      default: 'pending',
+      enum: ["pending", "paid", "failed", "refunded"],
+      default: "pending",
     },
-    bookingDate: {
-      type: Date,
-      required: true,
-    },
-    paymentId: {
-      type: String,
-    },
-    cancellationReason: {
-      type: String,
-    },
+    pickup: { type: Object }, // optional pickup info
     isActive: { type: Boolean, default: true },
     isDeleted: { type: Boolean, default: false },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
-
 bookingSchema.plugin(mongoosePaginate);
 
 export const Booking = mongoose.model("Booking", bookingSchema);
-
