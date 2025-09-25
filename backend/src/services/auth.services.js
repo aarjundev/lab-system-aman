@@ -210,30 +210,30 @@ export const socialLogin = async (email, platform = "userapp") => {
 };
 
 export const resetPassword = async (user, newPassword) => {
-    try {
-        let where = {
-            _id: user.id,
-            isActive: true, isDeleted: false,
-        }
-        const dbUser = await dbServiceFindOne(User, where);
-        if (!dbUser) {
-            return {
-                flag: true,
-                data: "User not found",
-            };
-        }
-        newPassword = await bcrypt.hash(newPassword, 10);
-        await dbServiceUpdateOne(User, where, {
-            "password": newPassword,
-            resetPasswordLink: {},
-            loginRetryLimit: 0
-        });
-     
-        return {
-            flag: false,
-            data: "Password reset successfully",
-        };
-    } catch (error) {
-        throw new Error(error.message)
-    }
+  try {
+      let where = {
+          _id: user.id,
+          isActive: true, isDeleted: false,
+      }
+      const dbUser = await dbServiceFindOne(User, where);
+      if (!dbUser) {
+          return {
+              flag: true,
+              data: "User not found",
+          };
+      }
+      newPassword = await bcrypt.hash(newPassword, 10);
+      await dbServiceUpdateOne(User, where, {
+          "password": newPassword,
+          resetPasswordLink: {},
+          loginRetryLimit: 0
+      });
+   
+      return {
+          flag: false,
+          data: "Password reset successfully",
+      };
+  } catch (error) {
+      throw new Error(error.message)
+  }
 };
